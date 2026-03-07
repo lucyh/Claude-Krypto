@@ -186,30 +186,6 @@ h1 {
 	background: #0f3460;
 }
 
-.equals-btn {
-	width: 48px;
-	height: 48px;
-	background: #4ecca3;
-	border: none;
-	border-radius: 10px;
-	color: #1a1a2e;
-	font-size: 1.5rem;
-	font-weight: 700;
-	cursor: pointer;
-	transition: all 0.2s;
-	opacity: 0.3;
-}
-
-.equals-btn.ready {
-	opacity: 1;
-	box-shadow: 0 2px 12px rgba(78, 204, 163, 0.4);
-}
-
-.equals-btn.ready:hover {
-	background: #3dbb94;
-	transform: scale(1.05);
-}
-
 /* History */
 .history {
 	background: #16213e;
@@ -366,7 +342,6 @@ h1 {
 	<div class="slot num-slot" id="slot-a" data-slot="a"></div>
 	<div class="slot op-slot" id="slot-op" data-slot="op"></div>
 	<div class="slot num-slot" id="slot-b" data-slot="b"></div>
-	<button class="equals-btn" id="equals-btn" onclick="calculate()">=</button>
 </div>
 
 <div class="history" id="history">
@@ -562,7 +537,7 @@ function renderAll() {
 	renderCards();
 	renderSlots();
 	renderHistory();
-	updateEqualsBtn();
+	checkAutoCalculate();
 }
 
 function renderTarget() {
@@ -611,10 +586,18 @@ function renderSlots() {
 	slotB.className = 'slot num-slot' + (slots.b ? ' filled' : '');
 	slotB.textContent = slots.b ? slots.b.value : '';
 	slotB.onclick = slots.b ? () => returnFromSlot('b') : null;
+
+	// Sync operator chip highlights
+	document.querySelectorAll('.op-chip').forEach(chip => {
+		chip.classList.toggle('active', chip.dataset.op === slots.op);
+	});
 }
 
 function returnFromSlot(slotName) {
 	slots[slotName] = null;
+	if (slotName === 'op') {
+		document.querySelectorAll('.op-chip').forEach(c => c.classList.remove('active'));
+	}
 	renderAll();
 }
 
@@ -632,9 +615,10 @@ function renderHistory() {
 	container.innerHTML = html;
 }
 
-function updateEqualsBtn() {
-	const btn = document.getElementById('equals-btn');
-	btn.classList.toggle('ready', !!(slots.a && slots.b && slots.op));
+function checkAutoCalculate() {
+	if (slots.a && slots.b && slots.op) {
+		setTimeout(() => calculate(), 150);
+	}
 }
 
 // ---- Drag and Drop ----
@@ -707,7 +691,6 @@ function moveGhost(x, y) {
 function getSlotUnderPoint(x, y) {
 	const slots_els = [
 		{ el: document.getElementById('slot-a'), name: 'a', type: 'num' },
-		{ el: document.getElementById('slot-op'), name: 'op', type: 'op' },
 		{ el: document.getElementById('slot-b'), name: 'b', type: 'num' },
 	];
 	for (const s of slots_els) {
@@ -758,12 +741,15 @@ function tryDrop(x, y) {
 	return false;
 }
 
-// Set up operator chip dragging
-document.querySelectorAll('.op-chip').forEach(chip => {
-	chip.addEventListener('pointerdown', e => {
-		startDrag(e, 'op', chip.dataset.op, chip);
+function selectOp(op) {
+	slots.op = op;
+	renderSlots();
+	checkAutoCalculate();
+	// Highlight active operator
+	document.querySelectorAll('.op-chip').forEach(chip => {
+		chip.classList.toggle('active', chip.dataset.op === op);
 	});
-});
+}
 
 // ---- Confetti ----
 function launchConfetti() {
