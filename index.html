@@ -232,8 +232,11 @@ h1 {
 
 <div class="action-bar">
 	<button class="action-btn undo-btn" onclick="undo()">Undo</button>
+	<button class="action-btn undo-btn" onclick="showSolution()">Show Solution</button>
 	<button class="action-btn new-game-btn" onclick="newGame()">New Game</button>
 </div>
+
+<div class="history" id="solution" style="display:none; margin-top: 16px;"></div>
 
 <script>
 let mode = 9;
@@ -256,19 +259,77 @@ function setMode(m) {
 	newGame();
 }
 
+let solution = null; // stored solution steps
+
 function newGame() {
-	target = rand(1, mode);
+	// Keep generating until we find a solvable puzzle
+	let values, t, sol;
+	do {
+		t = rand(1, mode);
+		values = [];
+		for (let i = 0; i < 5; i++) values.push(rand(1, mode));
+		sol = solve(values, t);
+	} while (!sol);
+
+	target = t;
+	solution = sol;
 	cards = [];
 	nextId = 0;
-	for (let i = 0; i < 5; i++) {
-		cards.push({ id: nextId++, value: rand(1, mode), used: false });
+	for (const v of values) {
+		cards.push({ id: nextId++, value: v, used: false });
 	}
 	selectedCard = null;
 	selectedOp = null;
 	history = [];
 	document.getElementById('message').textContent = '';
 	document.getElementById('message').className = 'message';
+	document.getElementById('solution').style.display = 'none';
 	renderAll();
+}
+
+// Brute-force solver: try all ways to pick 2 numbers, apply an op, recurse
+function solve(numbers, target) {
+	if (numbers.length === 1) {
+		return numbers[0] === target ? [] : null;
+	}
+
+	for (let i = 0; i < numbers.length; i++) {
+		for (let j = 0; j < numbers.length; j++) {
+			if (i === j) continue;
+			const a = numbers[i], b = numbers[j];
+			const rest = numbers.filter((_, k) => k !== i && k !== j);
+
+			const ops = [
+				{ op: '+', result: a + b },
+				{ op: '-', result: a - b },
+				{ op: '*', result: a * b },
+			];
+			if (b !== 0 && a % b === 0) {
+				ops.push({ op: '/', result: a / b });
+			}
+
+			for (const { op, result } of ops) {
+				const sub = solve([...rest, result], target);
+				if (sub !== null) {
+					return [{ a, b, op, result }, ...sub];
+				}
+			}
+		}
+	}
+	return null;
+}
+
+function showSolution() {
+	if (!solution) return;
+	const container = document.getElementById('solution');
+	let html = '<div class="history-title">Solution</div>';
+	for (const step of solution) {
+		const opDisplay = step.op === '*' ? '\u00d7' : step.op === '/' ? '\u00f7' : step.op;
+		html += '<div class="history-step">' +
+			step.a + ' ' + opDisplay + ' ' + step.b + ' = ' + step.result + '</div>';
+	}
+	container.innerHTML = html;
+	container.style.display = 'block';
 }
 
 function renderAll() {
