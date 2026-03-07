@@ -117,20 +117,21 @@ h1 {
 	border-radius: 10px;
 	color: #eee;
 	font-size: 1.4rem;
-	cursor: grab;
+	cursor: pointer;
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	touch-action: none;
-	transition: border-color 0.15s;
+	transition: border-color 0.15s, background 0.15s;
 }
 
 .op-chip:hover {
 	border-color: #e94560;
 }
 
-.op-chip.dragging {
-	opacity: 0.4;
+.op-chip.active {
+	border-color: #e94560;
+	background: #e94560;
+	color: #fff;
 }
 
 /* Expression builder */
@@ -244,8 +245,28 @@ h1 {
 	margin-bottom: 14px;
 }
 
-.message.win { color: #4ecca3; }
+.message.win {
+	color: #4ecca3;
+	font-size: 2rem;
+	animation: winPulse 0.6s ease-in-out 3;
+}
 .message.error { color: #e94560; }
+
+@keyframes winPulse {
+	0%, 100% { transform: scale(1); }
+	50% { transform: scale(1.2); }
+}
+
+/* Confetti canvas */
+#confetti {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	pointer-events: none;
+	z-index: 999;
+}
 
 .action-bar {
 	display: flex;
@@ -317,6 +338,7 @@ h1 {
 </head>
 <body>
 
+<canvas id="confetti"></canvas>
 <h1>KRYPTO</h1>
 
 <div class="mode-bar">
@@ -332,10 +354,10 @@ h1 {
 <div class="cards" id="cards"></div>
 
 <div class="operators" id="operators">
-	<div class="op-chip" data-op="+">+</div>
-	<div class="op-chip" data-op="-">&minus;</div>
-	<div class="op-chip" data-op="*">&times;</div>
-	<div class="op-chip" data-op="/">&divide;</div>
+	<div class="op-chip" data-op="+" onclick="selectOp('+')">+</div>
+	<div class="op-chip" data-op="-" onclick="selectOp('-')">&minus;</div>
+	<div class="op-chip" data-op="*" onclick="selectOp('*')">&times;</div>
+	<div class="op-chip" data-op="/" onclick="selectOp('/')">&divide;</div>
 </div>
 
 <div class="hint" id="hint">Drag numbers and an operator into the slots</div>
@@ -510,6 +532,7 @@ function calculate() {
 	if (cards.length === 1 && cards[0].value === target) {
 		msg.textContent = 'You got it!';
 		msg.className = 'message win';
+		launchConfetti();
 	}
 
 	renderAll();
@@ -741,6 +764,69 @@ document.querySelectorAll('.op-chip').forEach(chip => {
 		startDrag(e, 'op', chip.dataset.op, chip);
 	});
 });
+
+// ---- Confetti ----
+function launchConfetti() {
+	const canvas = document.getElementById('confetti');
+	const ctx = canvas.getContext('2d');
+	canvas.width = window.innerWidth;
+	canvas.height = window.innerHeight;
+
+	const colors = ['#e94560', '#4ecca3', '#f9d923', '#3282b8', '#ff6b6b', '#a855f7', '#fb923c'];
+	const pieces = [];
+
+	for (let i = 0; i < 150; i++) {
+		pieces.push({
+			x: Math.random() * canvas.width,
+			y: -20 - Math.random() * canvas.height * 0.5,
+			w: 6 + Math.random() * 6,
+			h: 4 + Math.random() * 4,
+			color: colors[Math.floor(Math.random() * colors.length)],
+			vx: (Math.random() - 0.5) * 4,
+			vy: 2 + Math.random() * 4,
+			spin: Math.random() * Math.PI * 2,
+			spinSpeed: (Math.random() - 0.5) * 0.2,
+			wobble: Math.random() * Math.PI * 2,
+			wobbleSpeed: 0.03 + Math.random() * 0.05,
+		});
+	}
+
+	let frame = 0;
+	const maxFrames = 180;
+
+	function animate() {
+		frame++;
+		ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+		let alive = false;
+		for (const p of pieces) {
+			p.x += p.vx + Math.sin(p.wobble) * 1.5;
+			p.y += p.vy;
+			p.spin += p.spinSpeed;
+			p.wobble += p.wobbleSpeed;
+			p.vy += 0.04; // gravity
+
+			if (p.y < canvas.height + 20) alive = true;
+
+			const opacity = frame > maxFrames - 40 ? Math.max(0, (maxFrames - frame) / 40) : 1;
+			ctx.save();
+			ctx.translate(p.x, p.y);
+			ctx.rotate(p.spin);
+			ctx.globalAlpha = opacity;
+			ctx.fillStyle = p.color;
+			ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+			ctx.restore();
+		}
+
+		if (alive && frame < maxFrames) {
+			requestAnimationFrame(animate);
+		} else {
+			ctx.clearRect(0, 0, canvas.width, canvas.height);
+		}
+	}
+
+	animate();
+}
 
 newGame();
 </script>
