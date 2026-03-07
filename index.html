@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Krypto</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+	font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+	background: #1a1a2e;
+	color: #eee;
+	min-height: 100vh;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	padding: 30px 16px;
+}
+
+h1 {
+	font-size: 2rem;
+	margin-bottom: 8px;
+	color: #e94560;
+	letter-spacing: 2px;
+}
+
+.mode-bar {
+	display: flex;
+	gap: 10px;
+	margin-bottom: 24px;
+}
+
+.mode-btn {
+	padding: 8px 20px;
+	border: 2px solid #e94560;
+	background: transparent;
+	color: #e94560;
+	border-radius: 6px;
+	font-size: 0.95rem;
+	cursor: pointer;
+	transition: all 0.2s;
+}
+
+.mode-btn.active, .mode-btn:hover {
+	background: #e94560;
+	color: #fff;
+}
+
+.target-section {
+	text-align: center;
+	margin-bottom: 24px;
+}
+
+.target-label {
+	font-size: 0.85rem;
+	text-transform: uppercase;
+	letter-spacing: 1px;
+	color: #888;
+	margin-bottom: 6px;
+}
+
+.target-number {
+	font-size: 3.5rem;
+	font-weight: 700;
+	color: #e94560;
+}
+
+.cards {
+	display: flex;
+	gap: 12px;
+	flex-wrap: wrap;
+	justify-content: center;
+	margin-bottom: 24px;
+}
+
+.card {
+	width: 64px;
+	height: 80px;
+	background: #16213e;
+	border: 2px solid #0f3460;
+	border-radius: 10px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 1.6rem;
+	font-weight: 700;
+	cursor: pointer;
+	transition: all 0.15s;
+	user-select: none;
+}
+
+.card:hover:not(.used):not(.selected) {
+	border-color: #e94560;
+	transform: translateY(-2px);
+}
+
+.card.selected {
+	border-color: #e94560;
+	background: #e94560;
+	color: #fff;
+	transform: translateY(-4px);
+	box-shadow: 0 4px 12px rgba(233, 69, 96, 0.4);
+}
+
+.card.used {
+	opacity: 0.3;
+	cursor: default;
+	transform: none;
+}
+
+.operators {
+	display: flex;
+	gap: 10px;
+	margin-bottom: 24px;
+}
+
+.op-btn {
+	width: 52px;
+	height: 52px;
+	background: #0f3460;
+	border: 2px solid #0f3460;
+	border-radius: 10px;
+	color: #eee;
+	font-size: 1.5rem;
+	cursor: pointer;
+	transition: all 0.15s;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.op-btn:hover {
+	border-color: #e94560;
+	background: #16213e;
+}
+
+.history {
+	background: #16213e;
+	border-radius: 10px;
+	padding: 16px;
+	min-width: 300px;
+	max-width: 400px;
+	width: 100%;
+	margin-bottom: 20px;
+	min-height: 60px;
+}
+
+.history-title {
+	font-size: 0.8rem;
+	text-transform: uppercase;
+	letter-spacing: 1px;
+	color: #888;
+	margin-bottom: 8px;
+}
+
+.history-step {
+	font-size: 1rem;
+	padding: 4px 0;
+	color: #ccc;
+	font-family: 'SF Mono', 'Fira Code', monospace;
+}
+
+.message {
+	font-size: 1.3rem;
+	font-weight: 600;
+	min-height: 2em;
+	text-align: center;
+	margin-bottom: 16px;
+}
+
+.message.win { color: #4ecca3; }
+.message.error { color: #e94560; }
+
+.action-bar {
+	display: flex;
+	gap: 10px;
+}
+
+.action-btn {
+	padding: 10px 24px;
+	border: none;
+	border-radius: 6px;
+	font-size: 0.95rem;
+	cursor: pointer;
+	transition: all 0.2s;
+}
+
+.new-game-btn {
+	background: #e94560;
+	color: #fff;
+}
+
+.new-game-btn:hover { background: #c73651; }
+
+.undo-btn {
+	background: #0f3460;
+	color: #eee;
+}
+
+.undo-btn:hover { background: #16213e; }
+</style>
+</head>
+<body>
+
+<h1>KRYPTO</h1>
+
+<div class="mode-bar">
+	<button class="mode-btn active" onclick="setMode(9)">1 &ndash; 9</button>
+	<button class="mode-btn" onclick="setMode(25)">1 &ndash; 25</button>
+</div>
+
+<div class="target-section">
+	<div class="target-label">Target</div>
+	<div class="target-number" id="target"></div>
+</div>
+
+<div class="cards" id="cards"></div>
+
+<div class="operators" id="operators">
+	<button class="op-btn" onclick="selectOp('+')">+</button>
+	<button class="op-btn" onclick="selectOp('-')">&minus;</button>
+	<button class="op-btn" onclick="selectOp('*')">&times;</button>
+	<button class="op-btn" onclick="selectOp('/')">&divide;</button>
+</div>
+
+<div class="history" id="history">
+	<div class="history-title">Steps</div>
+</div>
+
+<div class="message" id="message"></div>
+
+<div class="action-bar">
+	<button class="action-btn undo-btn" onclick="undo()">Undo</button>
+	<button class="action-btn new-game-btn" onclick="newGame()">New Game</button>
+</div>
+
+<script>
+let mode = 9;
+let target = 0;
+let cards = [];       // { id, value, used }
+let selectedCard = null;
+let selectedOp = null;
+let history = [];     // { cardA, cardB, op, result, resultCardId }
+let nextId = 0;
+
+function rand(min, max) {
+	return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function setMode(m) {
+	mode = m;
+	document.querySelectorAll('.mode-btn').forEach(btn => {
+		btn.classList.toggle('active', btn.textContent.includes(m.toString()));
+	});
+	newGame();
+}
+
+function newGame() {
+	target = rand(1, mode);
+	cards = [];
+	nextId = 0;
+	for (let i = 0; i < 5; i++) {
+		cards.push({ id: nextId++, value: rand(1, mode), used: false });
+	}
+	selectedCard = null;
+	selectedOp = null;
+	history = [];
+	document.getElementById('message').textContent = '';
+	document.getElementById('message').className = 'message';
+	renderAll();
+}
+
+function renderAll() {
+	renderTarget();
+	renderCards();
+	renderHistory();
+}
+
+function renderTarget() {
+	document.getElementById('target').textContent = target;
+}
+
+function renderCards() {
+	const container = document.getElementById('cards');
+	container.innerHTML = '';
+	for (const card of cards) {
+		if (card.used) continue;
+		const el = document.createElement('div');
+		el.className = 'card' + (selectedCard === card.id ? ' selected' : '');
+		el.textContent = card.value;
+		el.onclick = () => selectCard(card.id);
+		container.appendChild(el);
+	}
+}
+
+function renderHistory() {
+	const container = document.getElementById('history');
+	let html = '<div class="history-title">Steps</div>';
+	for (const step of history) {
+		const opDisplay = step.op === '*' ? '\u00d7' : step.op === '/' ? '\u00f7' : step.op;
+		html += '<div class="history-step">' +
+			step.cardA.value + ' ' + opDisplay + ' ' + step.cardB.value +
+			' = ' + step.result + '</div>';
+	}
+	if (history.length === 0) {
+		html += '<div class="history-step" style="color:#555">Select a card, an operator, then another card</div>';
+	}
+	container.innerHTML = html;
+}
+
+function selectCard(id) {
+	const msg = document.getElementById('message');
+	// If game is won, ignore clicks
+	if (msg.classList.contains('win')) return;
+
+	if (selectedCard === null) {
+		// First card selection
+		selectedCard = id;
+		renderCards();
+	} else if (selectedOp === null) {
+		// No operator yet - switch selection
+		selectedCard = id;
+		renderCards();
+	} else {
+		// Second card - perform operation
+		if (id === selectedCard) return; // can't use same card
+
+		const cardA = cards.find(c => c.id === selectedCard);
+		const cardB = cards.find(c => c.id === id);
+
+		let result;
+		switch (selectedOp) {
+			case '+': result = cardA.value + cardB.value; break;
+			case '-': result = cardA.value - cardB.value; break;
+			case '*': result = cardA.value * cardB.value; break;
+			case '/':
+				if (cardB.value === 0) {
+					msg.textContent = 'Cannot divide by zero';
+					msg.className = 'message error';
+					selectedCard = null;
+					selectedOp = null;
+					clearOpHighlight();
+					renderCards();
+					return;
+				}
+				result = cardA.value / cardB.value;
+				if (!Number.isInteger(result)) {
+					msg.textContent = 'Result must be a whole number';
+					msg.className = 'message error';
+					selectedCard = null;
+					selectedOp = null;
+					clearOpHighlight();
+					renderCards();
+					return;
+				}
+				break;
+		}
+
+		// Mark both cards as used, add result card
+		cardA.used = true;
+		cardB.used = true;
+		const resultCard = { id: nextId++, value: result, used: false };
+		cards.push(resultCard);
+
+		history.push({
+			cardA: { id: cardA.id, value: cardA.value },
+			cardB: { id: cardB.id, value: cardB.value },
+			op: selectedOp,
+			result: result,
+			resultCardId: resultCard.id
+		});
+
+		selectedCard = null;
+		selectedOp = null;
+		clearOpHighlight();
+
+		msg.textContent = '';
+		msg.className = 'message';
+
+		// Check for win
+		const remaining = cards.filter(c => !c.used);
+		if (remaining.length === 1 && remaining[0].value === target) {
+			msg.textContent = 'You got it!';
+			msg.className = 'message win';
+		}
+
+		renderAll();
+	}
+}
+
+function selectOp(op) {
+	if (selectedCard === null) return;
+	selectedOp = op;
+
+	// Highlight selected operator
+	clearOpHighlight();
+	document.querySelectorAll('.op-btn').forEach(btn => {
+		const btnOp = btn.textContent.trim();
+		const match = (op === '+' && btnOp === '+') ||
+			(op === '-' && btnOp === '\u2212') ||
+			(op === '*' && btnOp === '\u00d7') ||
+			(op === '/' && btnOp === '\u00f7');
+		if (match) btn.style.borderColor = '#e94560';
+	});
+}
+
+function clearOpHighlight() {
+	document.querySelectorAll('.op-btn').forEach(btn => {
+		btn.style.borderColor = '#0f3460';
+	});
+}
+
+function undo() {
+	if (history.length === 0) return;
+
+	const step = history.pop();
+
+	// Remove the result card
+	cards = cards.filter(c => c.id !== step.resultCardId);
+
+	// Restore the two used cards
+	const cardA = cards.find(c => c.id === step.cardA.id);
+	const cardB = cards.find(c => c.id === step.cardB.id);
+	if (cardA) cardA.used = false;
+	if (cardB) cardB.used = false;
+
+	selectedCard = null;
+	selectedOp = null;
+	clearOpHighlight();
+
+	document.getElementById('message').textContent = '';
+	document.getElementById('message').className = 'message';
+
+	renderAll();
+}
+
+newGame();
+</script>
+</body>
+</html>
