@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <title>Krypto</title>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -15,7 +15,9 @@ body {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	padding: 30px 16px;
+	padding: 24px 16px;
+	-webkit-user-select: none;
+	user-select: none;
 }
 
 h1 {
@@ -28,7 +30,7 @@ h1 {
 .mode-bar {
 	display: flex;
 	gap: 10px;
-	margin-bottom: 24px;
+	margin-bottom: 20px;
 }
 
 .mode-btn {
@@ -49,7 +51,7 @@ h1 {
 
 .target-section {
 	text-align: center;
-	margin-bottom: 24px;
+	margin-bottom: 20px;
 }
 
 .target-label {
@@ -57,93 +59,166 @@ h1 {
 	text-transform: uppercase;
 	letter-spacing: 1px;
 	color: #888;
-	margin-bottom: 6px;
+	margin-bottom: 4px;
 }
 
 .target-number {
-	font-size: 3.5rem;
+	font-size: 3.2rem;
 	font-weight: 700;
 	color: #e94560;
 }
 
+/* Number cards */
 .cards {
 	display: flex;
-	gap: 12px;
+	gap: 10px;
 	flex-wrap: wrap;
 	justify-content: center;
-	margin-bottom: 24px;
+	margin-bottom: 20px;
+	min-height: 72px;
 }
 
 .card {
-	width: 64px;
-	height: 80px;
+	width: 58px;
+	height: 68px;
 	background: #16213e;
 	border: 2px solid #0f3460;
 	border-radius: 10px;
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	font-size: 1.6rem;
+	font-size: 1.5rem;
 	font-weight: 700;
-	cursor: pointer;
-	transition: all 0.15s;
-	user-select: none;
+	cursor: grab;
+	transition: border-color 0.15s, box-shadow 0.15s;
+	touch-action: none;
 }
 
-.card:hover:not(.used):not(.selected) {
+.card:hover {
 	border-color: #e94560;
-	transform: translateY(-2px);
 }
 
-.card.selected {
-	border-color: #e94560;
-	background: #e94560;
-	color: #fff;
-	transform: translateY(-4px);
-	box-shadow: 0 4px 12px rgba(233, 69, 96, 0.4);
+.card.dragging {
+	opacity: 0.4;
 }
 
-.card.used {
-	opacity: 0.3;
-	cursor: default;
-	transform: none;
-}
-
+/* Operator chips */
 .operators {
 	display: flex;
 	gap: 10px;
-	margin-bottom: 24px;
+	margin-bottom: 20px;
 }
 
-.op-btn {
-	width: 52px;
-	height: 52px;
+.op-chip {
+	width: 48px;
+	height: 48px;
 	background: #0f3460;
 	border: 2px solid #0f3460;
 	border-radius: 10px;
 	color: #eee;
-	font-size: 1.5rem;
-	cursor: pointer;
-	transition: all 0.15s;
+	font-size: 1.4rem;
+	cursor: grab;
 	display: flex;
 	align-items: center;
 	justify-content: center;
+	touch-action: none;
+	transition: border-color 0.15s;
 }
 
-.op-btn:hover {
+.op-chip:hover {
 	border-color: #e94560;
+}
+
+.op-chip.dragging {
+	opacity: 0.4;
+}
+
+/* Expression builder */
+.expression {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	margin-bottom: 20px;
+}
+
+.slot {
+	width: 64px;
+	height: 68px;
+	border: 2px dashed #444;
+	border-radius: 10px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 1.5rem;
+	font-weight: 700;
+	transition: all 0.2s;
+	position: relative;
+}
+
+.slot.num-slot {
+	background: rgba(22, 33, 62, 0.5);
+}
+
+.slot.op-slot {
+	width: 52px;
+	height: 52px;
+	background: rgba(15, 52, 96, 0.3);
+	font-size: 1.4rem;
+}
+
+.slot.hover {
+	border-color: #e94560;
+	background: rgba(233, 69, 96, 0.15);
+}
+
+.slot.filled {
+	border-style: solid;
+	border-color: #e94560;
+	cursor: pointer;
+}
+
+.slot.filled.num-slot {
 	background: #16213e;
 }
 
+.slot.filled.op-slot {
+	background: #0f3460;
+}
+
+.equals-btn {
+	width: 48px;
+	height: 48px;
+	background: #4ecca3;
+	border: none;
+	border-radius: 10px;
+	color: #1a1a2e;
+	font-size: 1.5rem;
+	font-weight: 700;
+	cursor: pointer;
+	transition: all 0.2s;
+	opacity: 0.3;
+}
+
+.equals-btn.ready {
+	opacity: 1;
+	box-shadow: 0 2px 12px rgba(78, 204, 163, 0.4);
+}
+
+.equals-btn.ready:hover {
+	background: #3dbb94;
+	transform: scale(1.05);
+}
+
+/* History */
 .history {
 	background: #16213e;
 	border-radius: 10px;
-	padding: 16px;
-	min-width: 300px;
-	max-width: 400px;
+	padding: 14px;
+	min-width: 280px;
+	max-width: 380px;
 	width: 100%;
-	margin-bottom: 20px;
-	min-height: 60px;
+	margin-bottom: 16px;
+	min-height: 50px;
 }
 
 .history-title {
@@ -151,12 +226,12 @@ h1 {
 	text-transform: uppercase;
 	letter-spacing: 1px;
 	color: #888;
-	margin-bottom: 8px;
+	margin-bottom: 6px;
 }
 
 .history-step {
-	font-size: 1rem;
-	padding: 4px 0;
+	font-size: 0.95rem;
+	padding: 3px 0;
 	color: #ccc;
 	font-family: 'SF Mono', 'Fira Code', monospace;
 }
@@ -164,9 +239,9 @@ h1 {
 .message {
 	font-size: 1.3rem;
 	font-weight: 600;
-	min-height: 2em;
+	min-height: 1.8em;
 	text-align: center;
-	margin-bottom: 16px;
+	margin-bottom: 14px;
 }
 
 .message.win { color: #4ecca3; }
@@ -178,10 +253,10 @@ h1 {
 }
 
 .action-btn {
-	padding: 10px 24px;
+	padding: 10px 20px;
 	border: none;
 	border-radius: 6px;
-	font-size: 0.95rem;
+	font-size: 0.9rem;
 	cursor: pointer;
 	transition: all 0.2s;
 }
@@ -193,12 +268,51 @@ h1 {
 
 .new-game-btn:hover { background: #c73651; }
 
-.undo-btn {
+.secondary-btn {
 	background: #0f3460;
 	color: #eee;
 }
 
-.undo-btn:hover { background: #16213e; }
+.secondary-btn:hover { background: #16213e; }
+
+/* Floating drag ghost */
+.drag-ghost {
+	position: fixed;
+	pointer-events: none;
+	z-index: 1000;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-weight: 700;
+	border-radius: 10px;
+	opacity: 0.9;
+	transform: translate(-50%, -50%);
+}
+
+.drag-ghost.num {
+	width: 58px;
+	height: 68px;
+	background: #e94560;
+	border: 2px solid #e94560;
+	font-size: 1.5rem;
+	color: #fff;
+}
+
+.drag-ghost.op {
+	width: 48px;
+	height: 48px;
+	background: #e94560;
+	border: 2px solid #e94560;
+	font-size: 1.4rem;
+	color: #fff;
+}
+
+.hint {
+	font-size: 0.8rem;
+	color: #555;
+	text-align: center;
+	margin-bottom: 12px;
+}
 </style>
 </head>
 <body>
@@ -218,10 +332,19 @@ h1 {
 <div class="cards" id="cards"></div>
 
 <div class="operators" id="operators">
-	<button class="op-btn" onclick="selectOp('+')">+</button>
-	<button class="op-btn" onclick="selectOp('-')">&minus;</button>
-	<button class="op-btn" onclick="selectOp('*')">&times;</button>
-	<button class="op-btn" onclick="selectOp('/')">&divide;</button>
+	<div class="op-chip" data-op="+">+</div>
+	<div class="op-chip" data-op="-">&minus;</div>
+	<div class="op-chip" data-op="*">&times;</div>
+	<div class="op-chip" data-op="/">&divide;</div>
+</div>
+
+<div class="hint" id="hint">Drag numbers and an operator into the slots</div>
+
+<div class="expression">
+	<div class="slot num-slot" id="slot-a" data-slot="a"></div>
+	<div class="slot op-slot" id="slot-op" data-slot="op"></div>
+	<div class="slot num-slot" id="slot-b" data-slot="b"></div>
+	<button class="equals-btn" id="equals-btn" onclick="calculate()">=</button>
 </div>
 
 <div class="history" id="history">
@@ -231,8 +354,8 @@ h1 {
 <div class="message" id="message"></div>
 
 <div class="action-bar">
-	<button class="action-btn undo-btn" onclick="undo()">Undo</button>
-	<button class="action-btn undo-btn" onclick="showSolution()">Show Solution</button>
+	<button class="action-btn secondary-btn" onclick="undo()">Undo</button>
+	<button class="action-btn secondary-btn" onclick="showSolution()">Show Solution</button>
 	<button class="action-btn new-game-btn" onclick="newGame()">New Game</button>
 </div>
 
@@ -241,64 +364,36 @@ h1 {
 <script>
 let mode = 9;
 let target = 0;
-let cards = [];       // { id, value, used }
-let selectedCard = null;
-let selectedOp = null;
-let history = [];     // { cardA, cardB, op, result, resultCardId }
+let cards = [];       // { id, value }
+let gameHistory = []; // { cardAId, cardAVal, cardBId, cardBVal, op, result, resultId }
 let nextId = 0;
+let solution = null;
+
+// Expression slots state
+let slots = { a: null, b: null, op: null };
+// slots.a / slots.b = { cardId, value } or null
+// slots.op = '+' | '-' | '*' | '/' or null
+
+// Drag state
+let dragType = null;   // 'num' or 'op'
+let dragData = null;   // { cardId, value } or op string
+let dragGhost = null;
+let dragSourceSlot = null; // if dragging from a slot
 
 function rand(min, max) {
 	return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-function setMode(m) {
-	mode = m;
-	document.querySelectorAll('.mode-btn').forEach(btn => {
-		btn.classList.toggle('active', btn.textContent.includes(m.toString()));
-	});
-	newGame();
-}
-
-let solution = null; // stored solution steps
-
-function newGame() {
-	// Keep generating until we find a solvable puzzle
-	let values, t, sol;
-	do {
-		t = rand(1, mode);
-		values = [];
-		for (let i = 0; i < 5; i++) values.push(rand(1, mode));
-		sol = solve(values, t);
-	} while (!sol);
-
-	target = t;
-	solution = sol;
-	cards = [];
-	nextId = 0;
-	for (const v of values) {
-		cards.push({ id: nextId++, value: v, used: false });
-	}
-	selectedCard = null;
-	selectedOp = null;
-	history = [];
-	document.getElementById('message').textContent = '';
-	document.getElementById('message').className = 'message';
-	document.getElementById('solution').style.display = 'none';
-	renderAll();
-}
-
-// Brute-force solver: try all ways to pick 2 numbers, apply an op, recurse
-function solve(numbers, target) {
+// ---- Solver ----
+function solve(numbers, tgt) {
 	if (numbers.length === 1) {
-		return numbers[0] === target ? [] : null;
+		return numbers[0] === tgt ? [] : null;
 	}
-
 	for (let i = 0; i < numbers.length; i++) {
 		for (let j = 0; j < numbers.length; j++) {
 			if (i === j) continue;
 			const a = numbers[i], b = numbers[j];
 			const rest = numbers.filter((_, k) => k !== i && k !== j);
-
 			const ops = [
 				{ op: '+', result: a + b },
 				{ op: '-', result: a - b },
@@ -307,9 +402,8 @@ function solve(numbers, target) {
 			if (b !== 0 && a % b === 0) {
 				ops.push({ op: '/', result: a / b });
 			}
-
 			for (const { op, result } of ops) {
-				const sub = solve([...rest, result], target);
+				const sub = solve([...rest, result], tgt);
 				if (sub !== null) {
 					return [{ a, b, op, result }, ...sub];
 				}
@@ -332,10 +426,120 @@ function showSolution() {
 	container.style.display = 'block';
 }
 
+// ---- Game logic ----
+function setMode(m) {
+	mode = m;
+	document.querySelectorAll('.mode-btn').forEach(btn => {
+		btn.classList.toggle('active', btn.textContent.includes(m.toString()));
+	});
+	newGame();
+}
+
+function newGame() {
+	let values, t, sol;
+	do {
+		t = rand(1, mode);
+		values = [];
+		for (let i = 0; i < 5; i++) values.push(rand(1, mode));
+		sol = solve(values, t);
+	} while (!sol);
+
+	target = t;
+	solution = sol;
+	cards = [];
+	nextId = 0;
+	for (const v of values) {
+		cards.push({ id: nextId++, value: v });
+	}
+	gameHistory = [];
+	slots = { a: null, b: null, op: null };
+	document.getElementById('message').textContent = '';
+	document.getElementById('message').className = 'message';
+	document.getElementById('solution').style.display = 'none';
+	renderAll();
+}
+
+function calculate() {
+	if (!slots.a || !slots.b || !slots.op) return;
+
+	const a = slots.a.value;
+	const b = slots.b.value;
+	const op = slots.op;
+	const msg = document.getElementById('message');
+	let result;
+
+	switch (op) {
+		case '+': result = a + b; break;
+		case '-': result = a - b; break;
+		case '*': result = a * b; break;
+		case '/':
+			if (b === 0) {
+				msg.textContent = 'Cannot divide by zero';
+				msg.className = 'message error';
+				return;
+			}
+			result = a / b;
+			if (!Number.isInteger(result)) {
+				msg.textContent = 'Result must be a whole number';
+				msg.className = 'message error';
+				return;
+			}
+			break;
+	}
+
+	// Remove the two used cards, add result
+	const aId = slots.a.cardId;
+	const bId = slots.b.cardId;
+	cards = cards.filter(c => c.id !== aId && c.id !== bId);
+	const resultCard = { id: nextId++, value: result };
+	cards.push(resultCard);
+
+	const opDisplay = op === '*' ? '\u00d7' : op === '/' ? '\u00f7' : op;
+	gameHistory.push({
+		cardAId: aId, cardAVal: a,
+		cardBId: bId, cardBVal: b,
+		op: op, opDisplay: opDisplay,
+		result: result, resultId: resultCard.id
+	});
+
+	slots = { a: null, b: null, op: null };
+	msg.textContent = '';
+	msg.className = 'message';
+
+	// Check win
+	if (cards.length === 1 && cards[0].value === target) {
+		msg.textContent = 'You got it!';
+		msg.className = 'message win';
+	}
+
+	renderAll();
+}
+
+function undo() {
+	if (gameHistory.length === 0) return;
+
+	// Clear slots first (return any cards in slots)
+	slots = { a: null, b: null, op: null };
+
+	const step = gameHistory.pop();
+	cards = cards.filter(c => c.id !== step.resultId);
+	cards.push({ id: step.cardAId, value: step.cardAVal });
+	cards.push({ id: step.cardBId, value: step.cardBVal });
+
+	document.getElementById('message').textContent = '';
+	document.getElementById('message').className = 'message';
+	document.getElementById('solution').style.display = 'none';
+
+	renderAll();
+}
+
+// ---- Rendering ----
 function renderAll() {
 	renderTarget();
 	renderCards();
+	renderSlots();
 	renderHistory();
+	updateEqualsBtn();
 }
 
 function renderTarget() {
@@ -345,156 +549,198 @@ function renderTarget() {
 function renderCards() {
 	const container = document.getElementById('cards');
 	container.innerHTML = '';
+
+	// Cards not in slots
+	const slotCardIds = new Set();
+	if (slots.a) slotCardIds.add(slots.a.cardId);
+	if (slots.b) slotCardIds.add(slots.b.cardId);
+
 	for (const card of cards) {
-		if (card.used) continue;
+		if (slotCardIds.has(card.id)) continue;
 		const el = document.createElement('div');
-		el.className = 'card' + (selectedCard === card.id ? ' selected' : '');
+		el.className = 'card';
 		el.textContent = card.value;
-		el.onclick = () => selectCard(card.id);
+		el.dataset.cardId = card.id;
+		el.dataset.value = card.value;
+
+		// Pointer events for drag
+		el.addEventListener('pointerdown', e => startDrag(e, 'num', { cardId: card.id, value: card.value }, el));
 		container.appendChild(el);
 	}
+}
+
+function renderSlots() {
+	// Slot A
+	const slotA = document.getElementById('slot-a');
+	slotA.className = 'slot num-slot' + (slots.a ? ' filled' : '');
+	slotA.textContent = slots.a ? slots.a.value : '';
+	slotA.onclick = slots.a ? () => returnFromSlot('a') : null;
+
+	// Slot Op
+	const slotOp = document.getElementById('slot-op');
+	const opDisplayMap = { '+': '+', '-': '\u2212', '*': '\u00d7', '/': '\u00f7' };
+	slotOp.className = 'slot op-slot' + (slots.op ? ' filled' : '');
+	slotOp.textContent = slots.op ? opDisplayMap[slots.op] : '';
+	slotOp.onclick = slots.op ? () => returnFromSlot('op') : null;
+
+	// Slot B
+	const slotB = document.getElementById('slot-b');
+	slotB.className = 'slot num-slot' + (slots.b ? ' filled' : '');
+	slotB.textContent = slots.b ? slots.b.value : '';
+	slotB.onclick = slots.b ? () => returnFromSlot('b') : null;
+}
+
+function returnFromSlot(slotName) {
+	slots[slotName] = null;
+	renderAll();
 }
 
 function renderHistory() {
 	const container = document.getElementById('history');
 	let html = '<div class="history-title">Steps</div>';
-	for (const step of history) {
-		const opDisplay = step.op === '*' ? '\u00d7' : step.op === '/' ? '\u00f7' : step.op;
+	for (const step of gameHistory) {
 		html += '<div class="history-step">' +
-			step.cardA.value + ' ' + opDisplay + ' ' + step.cardB.value +
+			step.cardAVal + ' ' + step.opDisplay + ' ' + step.cardBVal +
 			' = ' + step.result + '</div>';
 	}
-	if (history.length === 0) {
-		html += '<div class="history-step" style="color:#555">Select a card, an operator, then another card</div>';
+	if (gameHistory.length === 0) {
+		html += '<div class="history-step" style="color:#555">No steps yet</div>';
 	}
 	container.innerHTML = html;
 }
 
-function selectCard(id) {
-	const msg = document.getElementById('message');
-	// If game is won, ignore clicks
-	if (msg.classList.contains('win')) return;
+function updateEqualsBtn() {
+	const btn = document.getElementById('equals-btn');
+	btn.classList.toggle('ready', !!(slots.a && slots.b && slots.op));
+}
 
-	if (selectedCard === null) {
-		// First card selection
-		selectedCard = id;
-		renderCards();
-	} else if (selectedOp === null) {
-		// No operator yet - switch selection
-		selectedCard = id;
-		renderCards();
+// ---- Drag and Drop ----
+function startDrag(e, type, data, sourceEl) {
+	e.preventDefault();
+
+	dragType = type;
+	dragData = data;
+	dragSourceSlot = null;
+
+	sourceEl.classList.add('dragging');
+
+	// Create ghost
+	dragGhost = document.createElement('div');
+	dragGhost.className = 'drag-ghost ' + (type === 'num' ? 'num' : 'op');
+	if (type === 'num') {
+		dragGhost.textContent = data.value;
 	} else {
-		// Second card - perform operation
-		if (id === selectedCard) return; // can't use same card
+		const opDisplayMap = { '+': '+', '-': '\u2212', '*': '\u00d7', '/': '\u00f7' };
+		dragGhost.textContent = opDisplayMap[data] || data;
+	}
+	document.body.appendChild(dragGhost);
+	moveGhost(e.clientX, e.clientY);
 
-		const cardA = cards.find(c => c.id === selectedCard);
-		const cardB = cards.find(c => c.id === id);
+	const onMove = ev => {
+		ev.preventDefault();
+		const x = ev.clientX || (ev.touches && ev.touches[0].clientX);
+		const y = ev.clientY || (ev.touches && ev.touches[0].clientY);
+		moveGhost(x, y);
+		highlightSlots(x, y);
+	};
 
-		let result;
-		switch (selectedOp) {
-			case '+': result = cardA.value + cardB.value; break;
-			case '-': result = cardA.value - cardB.value; break;
-			case '*': result = cardA.value * cardB.value; break;
-			case '/':
-				if (cardB.value === 0) {
-					msg.textContent = 'Cannot divide by zero';
-					msg.className = 'message error';
-					selectedCard = null;
-					selectedOp = null;
-					clearOpHighlight();
-					renderCards();
-					return;
-				}
-				result = cardA.value / cardB.value;
-				if (!Number.isInteger(result)) {
-					msg.textContent = 'Result must be a whole number';
-					msg.className = 'message error';
-					selectedCard = null;
-					selectedOp = null;
-					clearOpHighlight();
-					renderCards();
-					return;
-				}
-				break;
+	const onEnd = ev => {
+		ev.preventDefault();
+		const x = ev.clientX || (ev.changedTouches && ev.changedTouches[0].clientX);
+		const y = ev.clientY || (ev.changedTouches && ev.changedTouches[0].clientY);
+
+		document.removeEventListener('pointermove', onMove);
+		document.removeEventListener('pointerup', onEnd);
+		document.removeEventListener('pointercancel', onEnd);
+
+		sourceEl.classList.remove('dragging');
+		if (dragGhost) {
+			dragGhost.remove();
+			dragGhost = null;
+		}
+		clearSlotHighlights();
+
+		// Check if dropped on a slot
+		const dropped = tryDrop(x, y);
+		if (!dropped && dragType === 'num') {
+			// If not dropped on slot, nothing happens (card stays)
 		}
 
-		// Mark both cards as used, add result card
-		cardA.used = true;
-		cardB.used = true;
-		const resultCard = { id: nextId++, value: result, used: false };
-		cards.push(resultCard);
+		dragType = null;
+		dragData = null;
+	};
 
-		history.push({
-			cardA: { id: cardA.id, value: cardA.value },
-			cardB: { id: cardB.id, value: cardB.value },
-			op: selectedOp,
-			result: result,
-			resultCardId: resultCard.id
-		});
+	document.addEventListener('pointermove', onMove);
+	document.addEventListener('pointerup', onEnd);
+	document.addEventListener('pointercancel', onEnd);
+}
 
-		selectedCard = null;
-		selectedOp = null;
-		clearOpHighlight();
+function moveGhost(x, y) {
+	if (!dragGhost) return;
+	dragGhost.style.left = x + 'px';
+	dragGhost.style.top = y + 'px';
+}
 
-		msg.textContent = '';
-		msg.className = 'message';
-
-		// Check for win
-		const remaining = cards.filter(c => !c.used);
-		if (remaining.length === 1 && remaining[0].value === target) {
-			msg.textContent = 'You got it!';
-			msg.className = 'message win';
+function getSlotUnderPoint(x, y) {
+	const slots_els = [
+		{ el: document.getElementById('slot-a'), name: 'a', type: 'num' },
+		{ el: document.getElementById('slot-op'), name: 'op', type: 'op' },
+		{ el: document.getElementById('slot-b'), name: 'b', type: 'num' },
+	];
+	for (const s of slots_els) {
+		const rect = s.el.getBoundingClientRect();
+		if (x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom) {
+			return s;
 		}
+	}
+	return null;
+}
 
-		renderAll();
+function highlightSlots(x, y) {
+	clearSlotHighlights();
+	const s = getSlotUnderPoint(x, y);
+	if (s && canDrop(s)) {
+		s.el.classList.add('hover');
 	}
 }
 
-function selectOp(op) {
-	if (selectedCard === null) return;
-	selectedOp = op;
+function clearSlotHighlights() {
+	document.querySelectorAll('.slot').forEach(el => el.classList.remove('hover'));
+}
 
-	// Highlight selected operator
-	clearOpHighlight();
-	document.querySelectorAll('.op-btn').forEach(btn => {
-		const btnOp = btn.textContent.trim();
-		const match = (op === '+' && btnOp === '+') ||
-			(op === '-' && btnOp === '\u2212') ||
-			(op === '*' && btnOp === '\u00d7') ||
-			(op === '/' && btnOp === '\u00f7');
-		if (match) btn.style.borderColor = '#e94560';
+function canDrop(slotInfo) {
+	if (dragType === 'num' && slotInfo.type === 'num') {
+		return !slots[slotInfo.name];
+	}
+	if (dragType === 'op' && slotInfo.type === 'op') {
+		return true; // can always replace op
+	}
+	return false;
+}
+
+function tryDrop(x, y) {
+	const s = getSlotUnderPoint(x, y);
+	if (!s) return false;
+
+	if (dragType === 'num' && s.type === 'num' && !slots[s.name]) {
+		slots[s.name] = { cardId: dragData.cardId, value: dragData.value };
+		renderAll();
+		return true;
+	}
+	if (dragType === 'op' && s.type === 'op') {
+		slots.op = dragData;
+		renderAll();
+		return true;
+	}
+	return false;
+}
+
+// Set up operator chip dragging
+document.querySelectorAll('.op-chip').forEach(chip => {
+	chip.addEventListener('pointerdown', e => {
+		startDrag(e, 'op', chip.dataset.op, chip);
 	});
-}
-
-function clearOpHighlight() {
-	document.querySelectorAll('.op-btn').forEach(btn => {
-		btn.style.borderColor = '#0f3460';
-	});
-}
-
-function undo() {
-	if (history.length === 0) return;
-
-	const step = history.pop();
-
-	// Remove the result card
-	cards = cards.filter(c => c.id !== step.resultCardId);
-
-	// Restore the two used cards
-	const cardA = cards.find(c => c.id === step.cardA.id);
-	const cardB = cards.find(c => c.id === step.cardB.id);
-	if (cardA) cardA.used = false;
-	if (cardB) cardB.used = false;
-
-	selectedCard = null;
-	selectedOp = null;
-	clearOpHighlight();
-
-	document.getElementById('message').textContent = '';
-	document.getElementById('message').className = 'message';
-
-	renderAll();
-}
+});
 
 newGame();
 </script>
