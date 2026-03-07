@@ -621,41 +621,57 @@ function checkAutoCalculate() {
 	}
 }
 
+// ---- Click to place ----
+function clickPlace(data) {
+	if (!slots.a) {
+		slots.a = { cardId: data.cardId, value: data.value };
+	} else if (!slots.b) {
+		slots.b = { cardId: data.cardId, value: data.value };
+	} else {
+		return; // both slots full
+	}
+	renderAll();
+}
+
 // ---- Drag and Drop ----
 function startDrag(e, type, data, sourceEl) {
 	e.preventDefault();
+
+	const startX = e.clientX;
+	const startY = e.clientY;
+	let moved = false;
 
 	dragType = type;
 	dragData = data;
 	dragSourceSlot = null;
 
-	sourceEl.classList.add('dragging');
-
-	// Create ghost
-	dragGhost = document.createElement('div');
-	dragGhost.className = 'drag-ghost ' + (type === 'num' ? 'num' : 'op');
-	if (type === 'num') {
-		dragGhost.textContent = data.value;
-	} else {
-		const opDisplayMap = { '+': '+', '-': '\u2212', '*': '\u00d7', '/': '\u00f7' };
-		dragGhost.textContent = opDisplayMap[data] || data;
-	}
-	document.body.appendChild(dragGhost);
-	moveGhost(e.clientX, e.clientY);
+	// Don't show ghost until movement detected
+	dragGhost = null;
 
 	const onMove = ev => {
 		ev.preventDefault();
 		const x = ev.clientX || (ev.touches && ev.touches[0].clientX);
 		const y = ev.clientY || (ev.touches && ev.touches[0].clientY);
-		moveGhost(x, y);
-		highlightSlots(x, y);
+		const dist = Math.abs(x - startX) + Math.abs(y - startY);
+
+		if (!moved && dist > 8) {
+			moved = true;
+			sourceEl.classList.add('dragging');
+			// Create ghost on first real movement
+			dragGhost = document.createElement('div');
+			dragGhost.className = 'drag-ghost num';
+			dragGhost.textContent = data.value;
+			document.body.appendChild(dragGhost);
+		}
+
+		if (moved) {
+			moveGhost(x, y);
+			highlightSlots(x, y);
+		}
 	};
 
 	const onEnd = ev => {
 		ev.preventDefault();
-		const x = ev.clientX || (ev.changedTouches && ev.changedTouches[0].clientX);
-		const y = ev.clientY || (ev.changedTouches && ev.changedTouches[0].clientY);
-
 		document.removeEventListener('pointermove', onMove);
 		document.removeEventListener('pointerup', onEnd);
 		document.removeEventListener('pointercancel', onEnd);
@@ -667,10 +683,14 @@ function startDrag(e, type, data, sourceEl) {
 		}
 		clearSlotHighlights();
 
-		// Check if dropped on a slot
-		const dropped = tryDrop(x, y);
-		if (!dropped && dragType === 'num') {
-			// If not dropped on slot, nothing happens (card stays)
+		if (!moved) {
+			// It was a click — auto-place in first available slot
+			clickPlace(data);
+		} else {
+			// It was a drag — try to drop on a slot
+			const x = ev.clientX || (ev.changedTouches && ev.changedTouches[0].clientX);
+			const y = ev.clientY || (ev.changedTouches && ev.changedTouches[0].clientY);
+			tryDrop(x, y);
 		}
 
 		dragType = null;
