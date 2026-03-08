@@ -352,7 +352,7 @@ h1 {
 
 <div class="action-bar">
 	<button class="action-btn secondary-btn" onclick="undo()">Undo</button>
-	<button class="action-btn secondary-btn" onclick="showSolution()">Show Solution</button>
+	<button class="action-btn secondary-btn" onclick="showHint()">Hint</button>
 	<button class="action-btn new-game-btn" onclick="newGame()">New Game</button>
 </div>
 
@@ -393,9 +393,11 @@ function solve(numbers, tgt) {
 			const rest = numbers.filter((_, k) => k !== i && k !== j);
 			const ops = [
 				{ op: '+', result: a + b },
-				{ op: '-', result: a - b },
 				{ op: '*', result: a * b },
 			];
+			if (a - b >= 0) {
+				ops.push({ op: '-', result: a - b });
+			}
 			if (b !== 0 && a % b === 0) {
 				ops.push({ op: '/', result: a / b });
 			}
@@ -410,17 +412,29 @@ function solve(numbers, tgt) {
 	return null;
 }
 
-function showSolution() {
-	if (!solution) return;
+function showHint() {
+	const msg = document.getElementById('message');
 	const container = document.getElementById('solution');
-	let html = '<div class="history-title">Solution</div>';
-	for (const step of solution) {
-		const opDisplay = step.op === '*' ? '\u00d7' : step.op === '/' ? '\u00f7' : step.op;
-		html += '<div class="history-step">' +
-			step.a + ' ' + opDisplay + ' ' + step.b + ' = ' + step.result + '</div>';
+
+	// Get current card values and try to solve from current state
+	const currentValues = cards.map(c => c.value);
+	const sol = solve(currentValues, target);
+
+	if (!sol) {
+		msg.textContent = 'No solution from here — try undoing some steps';
+		msg.className = 'message error';
+		container.style.display = 'none';
+		return;
 	}
-	container.innerHTML = html;
+
+	// Show just the next step
+	const step = sol[0];
+	const opDisplay = step.op === '*' ? '\u00d7' : step.op === '/' ? '\u00f7' : step.op;
+	container.innerHTML = '<div class="history-title">Hint</div>' +
+		'<div class="history-step">' + step.a + ' ' + opDisplay + ' ' + step.b + ' = ' + step.result + '</div>';
 	container.style.display = 'block';
+	msg.textContent = '';
+	msg.className = 'message';
 }
 
 // ---- Game logic ----
@@ -482,6 +496,12 @@ function calculate() {
 				return;
 			}
 			break;
+	}
+
+	if (result < 0) {
+		msg.textContent = 'Result cannot be negative';
+		msg.className = 'message error';
+		return;
 	}
 
 	// Remove the two used cards, add result
