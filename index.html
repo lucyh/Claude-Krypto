@@ -310,12 +310,123 @@ h1 {
 	text-align: center;
 	margin-bottom: 12px;
 }
+
+/* Info icon & modal */
+.title-row {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	margin-bottom: 8px;
+}
+
+.info-btn {
+	width: 26px;
+	height: 26px;
+	border-radius: 50%;
+	border: 2px solid #555;
+	background: transparent;
+	color: #888;
+	font-size: 0.85rem;
+	font-weight: 700;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	transition: border-color 0.2s, color 0.2s;
+	flex-shrink: 0;
+	margin-top: 4px;
+}
+
+.info-btn:hover {
+	border-color: #e94560;
+	color: #e94560;
+}
+
+.modal-overlay {
+	display: none;
+	position: fixed;
+	inset: 0;
+	background: rgba(0,0,0,0.6);
+	z-index: 1100;
+	align-items: center;
+	justify-content: center;
+}
+
+.modal-overlay.open {
+	display: flex;
+}
+
+.modal {
+	background: #16213e;
+	border: 2px solid #0f3460;
+	border-radius: 14px;
+	padding: 28px 28px 24px;
+	max-width: 360px;
+	width: 90%;
+	position: relative;
+}
+
+.modal h2 {
+	color: #e94560;
+	font-size: 1.3rem;
+	letter-spacing: 1px;
+	margin-bottom: 14px;
+}
+
+.modal p {
+	font-size: 0.95rem;
+	color: #ccc;
+	line-height: 1.6;
+	margin-bottom: 10px;
+}
+
+.modal ul {
+	font-size: 0.95rem;
+	color: #ccc;
+	line-height: 1.7;
+	padding-left: 18px;
+	margin-bottom: 10px;
+}
+
+.modal-close {
+	position: absolute;
+	top: 12px;
+	right: 14px;
+	background: none;
+	border: none;
+	color: #888;
+	font-size: 1.4rem;
+	cursor: pointer;
+	line-height: 1;
+}
+
+.modal-close:hover { color: #eee; }
 </style>
 </head>
 <body>
 
 <canvas id="confetti"></canvas>
-<h1>KRYPTO</h1>
+
+<div class="title-row">
+	<h1>KRYPTO</h1>
+	<button class="info-btn" onclick="document.getElementById('info-modal').classList.add('open')" title="How to play">i</button>
+</div>
+
+<div class="modal-overlay" id="info-modal" onclick="if(event.target===this)this.classList.remove('open')">
+	<div class="modal">
+		<button class="modal-close" onclick="document.getElementById('info-modal').classList.remove('open')">&times;</button>
+		<h2>How to Play</h2>
+		<p>Use your five number cards to reach the <strong style="color:#e94560">Target</strong> using arithmetic — one step at a time.</p>
+		<ul>
+			<li>Pick two numbers and an operator (+, &minus;, &times;, &divide;).</li>
+			<li>The result replaces the two numbers you used.</li>
+			<li>Keep going until one card remains — and it equals the target!</li>
+		</ul>
+		<p>Rules: results must be whole numbers and cannot be negative.</p>
+		<p>Stuck? Use <strong>Hint</strong> to see the next step, or <strong>Undo</strong> to backtrack.</p>
+		<p>Switch between <strong>1–9</strong> and <strong>1–25</strong> modes for different difficulty levels.</p>
+	</div>
+</div>
 
 <div class="mode-bar">
 	<button class="mode-btn active" onclick="setMode(9)">1 &ndash; 9</button>
