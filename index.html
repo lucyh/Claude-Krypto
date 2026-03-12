@@ -538,6 +538,49 @@ h1 {
 }
 
 .modal-close:hover { color: var(--text); }
+
+/* Settings panel */
+.settings-panel {
+	display: none;
+	background: var(--panel);
+	border-radius: 10px;
+	padding: 16px 20px;
+	margin-bottom: 16px;
+	width: 100%;
+	max-width: 380px;
+}
+
+.settings-panel.open {
+	display: block;
+}
+
+.settings-group {
+	margin-bottom: 14px;
+}
+
+.settings-group:last-child {
+	margin-bottom: 0;
+}
+
+.settings-group-label {
+	font-size: 0.75rem;
+	text-transform: uppercase;
+	letter-spacing: 1px;
+	color: var(--text-muted);
+	margin-bottom: 6px;
+	text-align: center;
+}
+
+.settings-panel .mode-bar {
+	margin-bottom: 0;
+	flex-wrap: wrap;
+	justify-content: center;
+}
+
+.settings-panel .theme-bar {
+	margin-bottom: 0;
+	justify-content: center;
+}
 </style>
 </head>
 <body>
@@ -547,6 +590,7 @@ h1 {
 <div class="title-row">
 	<h1>KRYPTO</h1>
 	<button class="info-btn" onclick="document.getElementById('info-modal').classList.add('open')" title="How to play">i</button>
+	<button class="info-btn" id="settings-btn" onclick="toggleSettings()" title="Settings">&#9881;</button>
 </div>
 
 <div class="modal-overlay" id="info-modal" onclick="if(event.target===this)this.classList.remove('open')">
@@ -565,18 +609,33 @@ h1 {
 	</div>
 </div>
 
-<div class="mode-bar">
-	<button class="mode-btn active" onclick="setMode(9)">1 &ndash; 9</button>
-	<button class="mode-btn" onclick="setMode(25)">1 &ndash; 25</button>
-</div>
-
-<div class="theme-bar">
-	<span class="theme-label">Theme</span>
-	<button class="theme-swatch active" data-theme="midnight" onclick="setTheme('midnight')" title="Midnight"></button>
-	<button class="theme-swatch" data-theme="forest" onclick="setTheme('forest')" title="Forest"></button>
-	<button class="theme-swatch" data-theme="sunset" onclick="setTheme('sunset')" title="Sunset"></button>
-	<button class="theme-swatch" data-theme="light" onclick="setTheme('light')" title="Light"></button>
-	<button class="theme-swatch" data-theme="cotton-candy" onclick="setTheme('cotton-candy')" title="Cotton Candy"></button>
+<div class="settings-panel" id="settings-panel">
+	<div class="settings-group">
+		<div class="settings-group-label">Number Range</div>
+		<div class="mode-bar" id="setting-range">
+			<button class="mode-btn active" onclick="setMode(9)">1 &ndash; 9</button>
+			<button class="mode-btn" onclick="setMode(25)">1 &ndash; 25</button>
+		</div>
+	</div>
+	<div class="settings-group">
+		<div class="settings-group-label">Difficulty</div>
+		<div class="mode-bar" id="setting-difficulty">
+			<button class="mode-btn" onclick="setDifficulty(2)">Very Easy</button>
+			<button class="mode-btn" onclick="setDifficulty(3)">Easy</button>
+			<button class="mode-btn" onclick="setDifficulty(4)">Medium</button>
+			<button class="mode-btn active" onclick="setDifficulty(5)">Normal</button>
+		</div>
+	</div>
+	<div class="settings-group">
+		<div class="settings-group-label">Theme</div>
+		<div class="theme-bar">
+			<button class="theme-swatch active" data-theme="midnight" onclick="setTheme('midnight')" title="Midnight"></button>
+			<button class="theme-swatch" data-theme="forest" onclick="setTheme('forest')" title="Forest"></button>
+			<button class="theme-swatch" data-theme="sunset" onclick="setTheme('sunset')" title="Sunset"></button>
+			<button class="theme-swatch" data-theme="light" onclick="setTheme('light')" title="Light"></button>
+			<button class="theme-swatch" data-theme="cotton-candy" onclick="setTheme('cotton-candy')" title="Cotton Candy"></button>
+		</div>
+	</div>
 </div>
 
 <div class="target-section">
@@ -617,6 +676,7 @@ h1 {
 
 <script>
 let mode = 9;
+let numCards = 5;
 let target = 0;
 let cards = [];       // { id, value }
 let gameHistory = []; // { cardAId, cardAVal, cardBId, cardBVal, op, result, resultId }
@@ -636,6 +696,11 @@ let dragSourceSlot = null; // if dragging from a slot
 
 function rand(min, max) {
 	return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+// ---- Settings toggle ----
+function toggleSettings() {
+	document.getElementById('settings-panel').classList.toggle('open');
 }
 
 // ---- Theme ----
@@ -706,8 +771,17 @@ function showHint() {
 // ---- Game logic ----
 function setMode(m) {
 	mode = m;
-	document.querySelectorAll('.mode-btn').forEach(btn => {
+	document.querySelectorAll('#setting-range .mode-btn').forEach(btn => {
 		btn.classList.toggle('active', btn.textContent.includes(m.toString()));
+	});
+	newGame();
+}
+
+function setDifficulty(n) {
+	numCards = n;
+	localStorage.setItem('krypto-difficulty', n);
+	document.querySelectorAll('#setting-difficulty .mode-btn').forEach((btn, i) => {
+		btn.classList.toggle('active', [2, 3, 4, 5][i] === n);
 	});
 	newGame();
 }
@@ -717,7 +791,7 @@ function newGame() {
 	do {
 		t = rand(1, mode);
 		values = [];
-		for (let i = 0; i < 5; i++) values.push(rand(1, mode));
+		for (let i = 0; i < numCards; i++) values.push(rand(1, mode));
 		sol = solve(values, t);
 	} while (!sol);
 
@@ -1121,8 +1195,11 @@ function launchConfetti() {
 }
 
 // Init
-const savedTheme = localStorage.getItem('krypto-theme') || 'midnight';
-setTheme(savedTheme);
+setTheme(localStorage.getItem('krypto-theme') || 'midnight');
+numCards = parseInt(localStorage.getItem('krypto-difficulty')) || 5;
+document.querySelectorAll('#setting-difficulty .mode-btn').forEach((btn, i) => {
+	btn.classList.toggle('active', [2, 3, 4, 5][i] === numCards);
+});
 newGame();
 </script>
 </body>
