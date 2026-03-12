@@ -65,6 +65,25 @@
 	--overlay-bg: rgba(0, 0, 0, 0.6);
 }
 
+[data-theme="lt"] {
+	--bg: #3c2321;
+	--panel: #4e3431;
+	--panel2: #634644;
+	--accent: #b04949;
+	--accent-hover: #8f3030;
+	--win: #ffcd72;
+	--text: #f5e7c4;
+	--text-secondary: #e2d5b2;
+	--text-muted: #c9ad96;
+	--text-dim: #8a6a5a;
+	--border-dim: #755856;
+	--text-on-accent: #f5e7c4;
+	--slot-num-bg: rgba(78, 52, 49, 0.5);
+	--slot-op-bg: rgba(99, 70, 68, 0.3);
+	--slot-hover-bg: rgba(176, 73, 73, 0.15);
+	--overlay-bg: rgba(0, 0, 0, 0.6);
+}
+
 [data-theme="light"] {
 	--bg: #f0f0eb;
 	--panel: #ffffff;
@@ -183,6 +202,7 @@ h1 {
 .theme-swatch[data-theme="midnight"] { background: #e94560; }
 .theme-swatch[data-theme="forest"]   { background: #4ecca3; }
 .theme-swatch[data-theme="sunset"]   { background: #fb923c; }
+.theme-swatch[data-theme="lt"]           { background: #b04949; }
 .theme-swatch[data-theme="light"]        { background: #2563eb; }
 .theme-swatch[data-theme="cotton-candy"] { background: #ff6eb4; }
 
@@ -604,7 +624,7 @@ h1 {
 	<div class="modal">
 		<button class="modal-close" onclick="document.getElementById('info-modal').classList.remove('open')">&times;</button>
 		<h2>How to Play</h2>
-		<p>Use your five number cards to reach the <strong style="color:var(--accent)">Target</strong> using arithmetic — one step at a time.</p>
+		<p>Use your number cards to reach the <strong style="color:var(--accent)">Target</strong> using arithmetic — one step at a time.</p>
 		<ul>
 			<li>Pick two numbers and an operator (+, &minus;, &times;, &divide;).</li>
 			<li>The result replaces the two numbers you used.</li>
@@ -637,6 +657,7 @@ h1 {
 			<button class="theme-swatch active" data-theme="midnight" onclick="setTheme('midnight')" title="Midnight"></button>
 			<button class="theme-swatch" data-theme="forest" onclick="setTheme('forest')" title="Forest"></button>
 			<button class="theme-swatch" data-theme="sunset" onclick="setTheme('sunset')" title="Sunset"></button>
+			<button class="theme-swatch" data-theme="lt" onclick="setTheme('lt')" title="LibraryThing"></button>
 			<button class="theme-swatch" data-theme="light" onclick="setTheme('light')" title="Light"></button>
 			<button class="theme-swatch" data-theme="cotton-candy" onclick="setTheme('cotton-candy')" title="Cotton Candy"></button>
 		</div>
