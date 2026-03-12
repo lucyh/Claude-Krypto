@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="midnight">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
@@ -7,10 +7,106 @@
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
+/* ---- Themes ---- */
+[data-theme="midnight"] {
+	--bg: #1a1a2e;
+	--panel: #16213e;
+	--panel2: #0f3460;
+	--accent: #e94560;
+	--accent-hover: #c73651;
+	--win: #4ecca3;
+	--text: #eee;
+	--text-secondary: #ccc;
+	--text-muted: #888;
+	--text-dim: #555;
+	--border-dim: #444;
+	--text-on-accent: #fff;
+	--slot-num-bg: rgba(22, 33, 62, 0.5);
+	--slot-op-bg: rgba(15, 52, 96, 0.3);
+	--slot-hover-bg: rgba(233, 69, 96, 0.15);
+	--overlay-bg: rgba(0, 0, 0, 0.6);
+}
+
+[data-theme="forest"] {
+	--bg: #0d1f12;
+	--panel: #132a1c;
+	--panel2: #1a4a28;
+	--accent: #4ecca3;
+	--accent-hover: #3aad8a;
+	--win: #f9d923;
+	--text: #e8f5e8;
+	--text-secondary: #b8d8b8;
+	--text-muted: #7a9e7a;
+	--text-dim: #4a6e4a;
+	--border-dim: #2a5a3a;
+	--text-on-accent: #0d1f12;
+	--slot-num-bg: rgba(19, 42, 28, 0.5);
+	--slot-op-bg: rgba(26, 74, 40, 0.3);
+	--slot-hover-bg: rgba(78, 204, 163, 0.15);
+	--overlay-bg: rgba(0, 0, 0, 0.6);
+}
+
+[data-theme="sunset"] {
+	--bg: #1a0a2e;
+	--panel: #2a1040;
+	--panel2: #3d1560;
+	--accent: #fb923c;
+	--accent-hover: #e07830;
+	--win: #4ecca3;
+	--text: #f0e8ff;
+	--text-secondary: #d0b8f0;
+	--text-muted: #9070b0;
+	--text-dim: #604080;
+	--border-dim: #503070;
+	--text-on-accent: #1a0a2e;
+	--slot-num-bg: rgba(42, 16, 64, 0.5);
+	--slot-op-bg: rgba(61, 21, 96, 0.3);
+	--slot-hover-bg: rgba(251, 146, 60, 0.15);
+	--overlay-bg: rgba(0, 0, 0, 0.6);
+}
+
+[data-theme="light"] {
+	--bg: #f0f0eb;
+	--panel: #ffffff;
+	--panel2: #e0e0d8;
+	--accent: #2563eb;
+	--accent-hover: #1d4ed8;
+	--win: #16a34a;
+	--text: #1a1a1a;
+	--text-secondary: #444;
+	--text-muted: #777;
+	--text-dim: #bbb;
+	--border-dim: #ccc;
+	--text-on-accent: #fff;
+	--slot-num-bg: rgba(255, 255, 255, 0.7);
+	--slot-op-bg: rgba(224, 224, 216, 0.5);
+	--slot-hover-bg: rgba(37, 99, 235, 0.1);
+	--overlay-bg: rgba(0, 0, 0, 0.4);
+}
+
+[data-theme="cotton-candy"] {
+	--bg: #0d1b3e;
+	--panel: #152a5a;
+	--panel2: #1e3870;
+	--accent: #ff6eb4;
+	--accent-hover: #e05a9a;
+	--win: #c084fc;
+	--text: #e8f2ff;
+	--text-secondary: #b0c8f0;
+	--text-muted: #6890c8;
+	--text-dim: #3a5888;
+	--border-dim: #2a4878;
+	--text-on-accent: #fff;
+	--slot-num-bg: rgba(21, 42, 90, 0.5);
+	--slot-op-bg: rgba(30, 56, 112, 0.3);
+	--slot-hover-bg: rgba(255, 110, 180, 0.15);
+	--overlay-bg: rgba(0, 0, 0, 0.6);
+}
+
 body {
 	font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-	background: #1a1a2e;
-	color: #eee;
+	background: var(--bg);
+	color: var(--text);
 	min-height: 100vh;
 	display: flex;
 	flex-direction: column;
@@ -18,26 +114,27 @@ body {
 	padding: 24px 16px;
 	-webkit-user-select: none;
 	user-select: none;
+	transition: background 0.3s, color 0.3s;
 }
 
 h1 {
 	font-size: 2rem;
 	margin-bottom: 8px;
-	color: #e94560;
+	color: var(--accent);
 	letter-spacing: 2px;
 }
 
 .mode-bar {
 	display: flex;
 	gap: 10px;
-	margin-bottom: 20px;
+	margin-bottom: 12px;
 }
 
 .mode-btn {
 	padding: 8px 20px;
-	border: 2px solid #e94560;
+	border: 2px solid var(--accent);
 	background: transparent;
-	color: #e94560;
+	color: var(--accent);
 	border-radius: 6px;
 	font-size: 0.95rem;
 	cursor: pointer;
@@ -45,9 +142,49 @@ h1 {
 }
 
 .mode-btn.active, .mode-btn:hover {
-	background: #e94560;
-	color: #fff;
+	background: var(--accent);
+	color: var(--text-on-accent);
 }
+
+/* Theme picker */
+.theme-bar {
+	display: flex;
+	gap: 8px;
+	margin-bottom: 20px;
+	align-items: center;
+}
+
+.theme-label {
+	font-size: 0.75rem;
+	text-transform: uppercase;
+	letter-spacing: 1px;
+	color: var(--text-dim);
+	margin-right: 2px;
+}
+
+.theme-swatch {
+	width: 22px;
+	height: 22px;
+	border-radius: 50%;
+	border: 2px solid transparent;
+	cursor: pointer;
+	transition: border-color 0.2s, transform 0.2s;
+}
+
+.theme-swatch:hover {
+	transform: scale(1.2);
+}
+
+.theme-swatch.active {
+	border-color: var(--text);
+	transform: scale(1.15);
+}
+
+.theme-swatch[data-theme="midnight"] { background: #e94560; }
+.theme-swatch[data-theme="forest"]   { background: #4ecca3; }
+.theme-swatch[data-theme="sunset"]   { background: #fb923c; }
+.theme-swatch[data-theme="light"]        { background: #2563eb; }
+.theme-swatch[data-theme="cotton-candy"] { background: #ff6eb4; }
 
 .target-section {
 	text-align: center;
@@ -58,14 +195,14 @@ h1 {
 	font-size: 0.85rem;
 	text-transform: uppercase;
 	letter-spacing: 1px;
-	color: #888;
+	color: var(--text-muted);
 	margin-bottom: 4px;
 }
 
 .target-number {
 	font-size: 3.2rem;
 	font-weight: 700;
-	color: #e94560;
+	color: var(--accent);
 }
 
 /* Number cards */
@@ -81,8 +218,8 @@ h1 {
 .card {
 	width: 58px;
 	height: 68px;
-	background: #16213e;
-	border: 2px solid #0f3460;
+	background: var(--panel);
+	border: 2px solid var(--panel2);
 	border-radius: 10px;
 	display: flex;
 	align-items: center;
@@ -95,7 +232,7 @@ h1 {
 }
 
 .card:hover {
-	border-color: #e94560;
+	border-color: var(--accent);
 }
 
 .card.dragging {
@@ -112,10 +249,10 @@ h1 {
 .op-chip {
 	width: 48px;
 	height: 48px;
-	background: #0f3460;
-	border: 2px solid #0f3460;
+	background: var(--panel2);
+	border: 2px solid var(--panel2);
 	border-radius: 10px;
-	color: #eee;
+	color: var(--text);
 	font-size: 1.4rem;
 	cursor: pointer;
 	display: flex;
@@ -125,13 +262,13 @@ h1 {
 }
 
 .op-chip:hover {
-	border-color: #e94560;
+	border-color: var(--accent);
 }
 
 .op-chip.active {
-	border-color: #e94560;
-	background: #e94560;
-	color: #fff;
+	border-color: var(--accent);
+	background: var(--accent);
+	color: var(--text-on-accent);
 }
 
 /* Expression builder */
@@ -145,7 +282,7 @@ h1 {
 .slot {
 	width: 64px;
 	height: 68px;
-	border: 2px dashed #444;
+	border: 2px dashed var(--border-dim);
 	border-radius: 10px;
 	display: flex;
 	align-items: center;
@@ -157,38 +294,38 @@ h1 {
 }
 
 .slot.num-slot {
-	background: rgba(22, 33, 62, 0.5);
+	background: var(--slot-num-bg);
 }
 
 .slot.op-slot {
 	width: 52px;
 	height: 52px;
-	background: rgba(15, 52, 96, 0.3);
+	background: var(--slot-op-bg);
 	font-size: 1.4rem;
 }
 
 .slot.hover {
-	border-color: #e94560;
-	background: rgba(233, 69, 96, 0.15);
+	border-color: var(--accent);
+	background: var(--slot-hover-bg);
 }
 
 .slot.filled {
 	border-style: solid;
-	border-color: #e94560;
+	border-color: var(--accent);
 	cursor: pointer;
 }
 
 .slot.filled.num-slot {
-	background: #16213e;
+	background: var(--panel);
 }
 
 .slot.filled.op-slot {
-	background: #0f3460;
+	background: var(--panel2);
 }
 
 /* History */
 .history {
-	background: #16213e;
+	background: var(--panel);
 	border-radius: 10px;
 	padding: 14px;
 	min-width: 280px;
@@ -202,14 +339,14 @@ h1 {
 	font-size: 0.8rem;
 	text-transform: uppercase;
 	letter-spacing: 1px;
-	color: #888;
+	color: var(--text-muted);
 	margin-bottom: 6px;
 }
 
 .history-step {
 	font-size: 0.95rem;
 	padding: 3px 0;
-	color: #ccc;
+	color: var(--text-secondary);
 	font-family: 'SF Mono', 'Fira Code', monospace;
 }
 
@@ -222,11 +359,11 @@ h1 {
 }
 
 .message.win {
-	color: #4ecca3;
+	color: var(--win);
 	font-size: 2rem;
 	animation: winPulse 0.6s ease-in-out 3;
 }
-.message.error { color: #e94560; }
+.message.error { color: var(--accent); }
 
 @keyframes winPulse {
 	0%, 100% { transform: scale(1); }
@@ -259,18 +396,18 @@ h1 {
 }
 
 .new-game-btn {
-	background: #e94560;
-	color: #fff;
+	background: var(--accent);
+	color: var(--text-on-accent);
 }
 
-.new-game-btn:hover { background: #c73651; }
+.new-game-btn:hover { background: var(--accent-hover); }
 
 .secondary-btn {
-	background: #0f3460;
-	color: #eee;
+	background: var(--panel2);
+	color: var(--text);
 }
 
-.secondary-btn:hover { background: #16213e; }
+.secondary-btn:hover { background: var(--panel); }
 
 /* Floating drag ghost */
 .drag-ghost {
@@ -289,24 +426,24 @@ h1 {
 .drag-ghost.num {
 	width: 58px;
 	height: 68px;
-	background: #e94560;
-	border: 2px solid #e94560;
+	background: var(--accent);
+	border: 2px solid var(--accent);
 	font-size: 1.5rem;
-	color: #fff;
+	color: var(--text-on-accent);
 }
 
 .drag-ghost.op {
 	width: 48px;
 	height: 48px;
-	background: #e94560;
-	border: 2px solid #e94560;
+	background: var(--accent);
+	border: 2px solid var(--accent);
 	font-size: 1.4rem;
-	color: #fff;
+	color: var(--text-on-accent);
 }
 
 .hint {
 	font-size: 0.8rem;
-	color: #555;
+	color: var(--text-dim);
 	text-align: center;
 	margin-bottom: 12px;
 }
@@ -323,9 +460,9 @@ h1 {
 	width: 26px;
 	height: 26px;
 	border-radius: 50%;
-	border: 2px solid #555;
+	border: 2px solid var(--text-dim);
 	background: transparent;
-	color: #888;
+	color: var(--text-muted);
 	font-size: 0.85rem;
 	font-weight: 700;
 	cursor: pointer;
@@ -338,15 +475,15 @@ h1 {
 }
 
 .info-btn:hover {
-	border-color: #e94560;
-	color: #e94560;
+	border-color: var(--accent);
+	color: var(--accent);
 }
 
 .modal-overlay {
 	display: none;
 	position: fixed;
 	inset: 0;
-	background: rgba(0,0,0,0.6);
+	background: var(--overlay-bg);
 	z-index: 1100;
 	align-items: center;
 	justify-content: center;
@@ -357,8 +494,8 @@ h1 {
 }
 
 .modal {
-	background: #16213e;
-	border: 2px solid #0f3460;
+	background: var(--panel);
+	border: 2px solid var(--panel2);
 	border-radius: 14px;
 	padding: 28px 28px 24px;
 	max-width: 360px;
@@ -367,7 +504,7 @@ h1 {
 }
 
 .modal h2 {
-	color: #e94560;
+	color: var(--accent);
 	font-size: 1.3rem;
 	letter-spacing: 1px;
 	margin-bottom: 14px;
@@ -375,14 +512,14 @@ h1 {
 
 .modal p {
 	font-size: 0.95rem;
-	color: #ccc;
+	color: var(--text-secondary);
 	line-height: 1.6;
 	margin-bottom: 10px;
 }
 
 .modal ul {
 	font-size: 0.95rem;
-	color: #ccc;
+	color: var(--text-secondary);
 	line-height: 1.7;
 	padding-left: 18px;
 	margin-bottom: 10px;
@@ -394,13 +531,13 @@ h1 {
 	right: 14px;
 	background: none;
 	border: none;
-	color: #888;
+	color: var(--text-muted);
 	font-size: 1.4rem;
 	cursor: pointer;
 	line-height: 1;
 }
 
-.modal-close:hover { color: #eee; }
+.modal-close:hover { color: var(--text); }
 </style>
 </head>
 <body>
@@ -416,7 +553,7 @@ h1 {
 	<div class="modal">
 		<button class="modal-close" onclick="document.getElementById('info-modal').classList.remove('open')">&times;</button>
 		<h2>How to Play</h2>
-		<p>Use your five number cards to reach the <strong style="color:#e94560">Target</strong> using arithmetic — one step at a time.</p>
+		<p>Use your five number cards to reach the <strong style="color:var(--accent)">Target</strong> using arithmetic — one step at a time.</p>
 		<ul>
 			<li>Pick two numbers and an operator (+, &minus;, &times;, &divide;).</li>
 			<li>The result replaces the two numbers you used.</li>
@@ -431,6 +568,15 @@ h1 {
 <div class="mode-bar">
 	<button class="mode-btn active" onclick="setMode(9)">1 &ndash; 9</button>
 	<button class="mode-btn" onclick="setMode(25)">1 &ndash; 25</button>
+</div>
+
+<div class="theme-bar">
+	<span class="theme-label">Theme</span>
+	<button class="theme-swatch active" data-theme="midnight" onclick="setTheme('midnight')" title="Midnight"></button>
+	<button class="theme-swatch" data-theme="forest" onclick="setTheme('forest')" title="Forest"></button>
+	<button class="theme-swatch" data-theme="sunset" onclick="setTheme('sunset')" title="Sunset"></button>
+	<button class="theme-swatch" data-theme="light" onclick="setTheme('light')" title="Light"></button>
+	<button class="theme-swatch" data-theme="cotton-candy" onclick="setTheme('cotton-candy')" title="Cotton Candy"></button>
 </div>
 
 <div class="target-section">
@@ -490,6 +636,15 @@ let dragSourceSlot = null; // if dragging from a slot
 
 function rand(min, max) {
 	return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+// ---- Theme ----
+function setTheme(theme) {
+	document.documentElement.setAttribute('data-theme', theme);
+	localStorage.setItem('krypto-theme', theme);
+	document.querySelectorAll('.theme-swatch').forEach(btn => {
+		btn.classList.toggle('active', btn.dataset.theme === theme);
+	});
 }
 
 // ---- Solver ----
@@ -741,7 +896,7 @@ function renderHistory() {
 			' = ' + step.result + '</div>';
 	}
 	if (gameHistory.length === 0) {
-		html += '<div class="history-step" style="color:#555">No steps yet</div>';
+		html += '<div class="history-step" style="color:var(--text-dim)">No steps yet</div>';
 	}
 	container.innerHTML = html;
 }
@@ -965,6 +1120,9 @@ function launchConfetti() {
 	animate();
 }
 
+// Init
+const savedTheme = localStorage.getItem('krypto-theme') || 'midnight';
+setTheme(savedTheme);
 newGame();
 </script>
 </body>
