@@ -239,6 +239,13 @@ h1 {
 	opacity: 0.4;
 }
 
+.card.used {
+	opacity: 0.3;
+	cursor: default;
+	pointer-events: none;
+	border-color: var(--border-dim);
+}
+
 /* Operator chips */
 .operators {
 	display: flex;
@@ -914,15 +921,17 @@ function renderCards() {
 	if (slots.b) slotCardIds.add(slots.b.cardId);
 
 	for (const card of cards) {
-		if (slotCardIds.has(card.id)) continue;
 		const el = document.createElement('div');
-		el.className = 'card';
 		el.textContent = card.value;
 		el.dataset.cardId = card.id;
 		el.dataset.value = card.value;
 
-		// Pointer events for drag
-		el.addEventListener('pointerdown', e => startDrag(e, 'num', { cardId: card.id, value: card.value }, el));
+		if (slotCardIds.has(card.id)) {
+			el.className = 'card used';
+		} else {
+			el.className = 'card';
+			el.addEventListener('pointerdown', e => startDrag(e, 'num', { cardId: card.id, value: card.value }, el));
+		}
 		container.appendChild(el);
 	}
 }
