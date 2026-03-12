@@ -726,7 +726,7 @@ function solve(numbers, tgt) {
 	}
 	for (let i = 0; i < numbers.length; i++) {
 		for (let j = 0; j < numbers.length; j++) {
-			if (i === j) continue;
+			if (i === j) { continue; }
 			const a = numbers[i], b = numbers[j];
 			const rest = numbers.filter((_, k) => k !== i && k !== j);
 			const ops = [
@@ -818,7 +818,7 @@ function newGame() {
 }
 
 function calculate() {
-	if (!slots.a || !slots.b || !slots.op) return;
+	if (!slots.a || !slots.b || !slots.op) { return; }
 
 	const a = slots.a.value;
 	const b = slots.b.value;
@@ -881,7 +881,7 @@ function calculate() {
 }
 
 function undo() {
-	if (gameHistory.length === 0) return;
+	if (gameHistory.length === 0) { return; }
 
 	// Clear slots first (return any cards in slots)
 	slots = { a: null, b: null, op: null };
@@ -917,8 +917,8 @@ function renderCards() {
 
 	// Cards not in slots
 	const slotCardIds = new Set();
-	if (slots.a) slotCardIds.add(slots.a.cardId);
-	if (slots.b) slotCardIds.add(slots.b.cardId);
+	if (slots.a) { slotCardIds.add(slots.a.cardId); }
+	if (slots.b) { slotCardIds.add(slots.b.cardId); }
 
 	for (const card of cards) {
 		const el = document.createElement('div');
@@ -1072,7 +1072,7 @@ function startDrag(e, type, data, sourceEl) {
 }
 
 function moveGhost(x, y) {
-	if (!dragGhost) return;
+	if (!dragGhost) { return; }
 	dragGhost.style.left = x + 'px';
 	dragGhost.style.top = y + 'px';
 }
@@ -1115,7 +1115,7 @@ function canDrop(slotInfo) {
 
 function tryDrop(x, y) {
 	const s = getSlotUnderPoint(x, y);
-	if (!s) return false;
+	if (!s) { return false; }
 
 	if (dragType === 'num' && s.type === 'num' && !slots[s.name]) {
 		slots[s.name] = { cardId: dragData.cardId, value: dragData.value };
@@ -1181,7 +1181,7 @@ function launchConfetti() {
 			p.wobble += p.wobbleSpeed;
 			p.vy += 0.04; // gravity
 
-			if (p.y < canvas.height + 20) alive = true;
+			if (p.y < canvas.height + 20) { alive = true; }
 
 			const opacity = frame > maxFrames - 40 ? Math.max(0, (maxFrames - frame) / 40) : 1;
 			ctx.save();
