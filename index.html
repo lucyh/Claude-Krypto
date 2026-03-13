@@ -719,6 +719,7 @@ let dragType = null;   // 'num' or 'op'
 let dragData = null;   // { cardId, value } or op string
 let dragGhost = null;
 let dragSourceSlot = null; // if dragging from a slot
+let lastSlotFillTime = 0;  // timestamp of last card placed in a slot
 
 function rand(min, max) {
 	return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -948,6 +949,7 @@ function renderCards() {
 		if (slotCardIds.has(card.id)) {
 			el.className = 'card used';
 			el.addEventListener('click', () => {
+				if (Date.now() - lastSlotFillTime < 400) { return; }
 				if (slots.a && slots.a.cardId === card.id) {
 					returnFromSlot('a');
 				} else if (slots.b && slots.b.cardId === card.id) {
@@ -1020,8 +1022,10 @@ function checkAutoCalculate() {
 function clickPlace(data) {
 	if (!slots.a) {
 		slots.a = { cardId: data.cardId, value: data.value };
+		lastSlotFillTime = Date.now();
 	} else if (!slots.b) {
 		slots.b = { cardId: data.cardId, value: data.value };
+		lastSlotFillTime = Date.now();
 	} else {
 		return; // both slots full
 	}
@@ -1145,6 +1149,7 @@ function tryDrop(x, y) {
 
 	if (dragType === 'num' && s.type === 'num' && !slots[s.name]) {
 		slots[s.name] = { cardId: dragData.cardId, value: dragData.value };
+		lastSlotFillTime = Date.now();
 		renderAll();
 		return true;
 	}
