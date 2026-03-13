@@ -262,8 +262,7 @@ h1 {
 
 .card.used {
 	opacity: 0.3;
-	cursor: default;
-	pointer-events: none;
+	cursor: pointer;
 	border-color: var(--border-dim);
 }
 
@@ -948,6 +947,13 @@ function renderCards() {
 
 		if (slotCardIds.has(card.id)) {
 			el.className = 'card used';
+			el.addEventListener('click', () => {
+				if (slots.a && slots.a.cardId === card.id) {
+					returnFromSlot('a');
+				} else if (slots.b && slots.b.cardId === card.id) {
+					returnFromSlot('b');
+				}
+			});
 		} else {
 			el.className = 'card';
 			el.addEventListener('pointerdown', e => startDrag(e, 'num', { cardId: card.id, value: card.value }, el));
